@@ -5,11 +5,12 @@
     ],
     "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [
-        "lib/mockito-core-5.9.0.jar",
-        "/Users/bhawanagupta/Documents/src/tasktracker/lib/jackson-core-2.19.0.jar",
-        "/Users/bhawanagupta/Documents/src/tasktracker/lib/jackson-annotations-2.19.0.jar",
-        "/Users/bhawanagupta/Documents/src/tasktracker/lib/junit-platform-console-standalone-1.9.3.jar",
-        "/Users/bhawanagupta/Documents/src/tasktracker/lib/jackson-databind-2.19.0.jar"
+        "/Users/bhawanagupta/Documents/src/zzjars/byte-buddy-agent-1.17.5.jar",
+        "/Users/bhawanagupta/Documents/src/zzjars/jackson-annotations-2.19.0.jar",
+        "/Users/bhawanagupta/Documents/src/zzjars/jackson-core-2.19.0.jar",
+        "/Users/bhawanagupta/Documents/src/zzjars/jackson-databind-2.19.0.jar",
+        "/Users/bhawanagupta/Documents/src/zzjars/junit-platform-console-standalone-1.9.3.jar",
+        "/Users/bhawanagupta/Documents/src/zzjars/mockito-core-5.17.0.jar"
     ],
     "java.format.settings.url": ".vscode/java-formatter.xml"
 }
