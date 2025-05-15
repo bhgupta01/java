@@ -1,0 +1,6 @@
+bin/
+lib/
+target/
+.DS_Store
+tasks.json
+tests.json
