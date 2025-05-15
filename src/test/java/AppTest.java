@@ -1,6 +1,3 @@
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
-
 import org.junit.jupiter.api.Test;
 
 public class AppTest {
