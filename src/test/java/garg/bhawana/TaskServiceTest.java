@@ -1,3 +1,4 @@
+package garg.bhawana;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,7 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 public class TaskServiceTest {
-    String filename = "tests.json";
+    String filename = "src/test/resources/tests.json";
 
     @Test
     public void testAddSaveList() throws Exception {

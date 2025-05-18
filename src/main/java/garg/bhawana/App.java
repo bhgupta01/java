@@ -1,3 +1,4 @@
+package garg.bhawana;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,7 +15,7 @@ public class App {
         try {
             switch (args[0]) {
             case "add":
-                service.add(new Task(args[1]));
+                System.out.println(service.add(new Task(args[1])));
                 break;
             case "update":
                 service.update(UUID.fromString(args[1]), Optional.of(args[2]), Optional.empty());
@@ -49,7 +50,7 @@ public class App {
 
     public static void main(String[] args) throws Exception {
         new App(
-            new TaskService("tasks.json")
+            new TaskService("src/main/resources/tasks.json")
         ).run(args);
     }
 }

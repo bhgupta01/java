@@ -1,7 +1,5 @@
-bin/
-lib/
-target/
-
 .DS_Store
-tests.json
-tasks.json
+
+.vscode/
+target/
+src/main/java/resources/
