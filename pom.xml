@@ -6,6 +6,7 @@
     <groupId>garg.bhawana</groupId>
     <artifactId>task-tracker</artifactId>
     <version>1.0</version>
+    <packaging>jar</packaging>
 
     <dependencies>
         <!-- compile -->
@@ -70,12 +71,20 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version>
-                <configuration>
-                    <argLine>-javaagent:${org.mockito:mockito-core:jar}</argLine>
-                </configuration>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.4.5</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>spring-boot</classifier>
+                            <mainClass>garg.bhawana.App</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

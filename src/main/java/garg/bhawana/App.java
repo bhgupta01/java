@@ -1,8 +1,8 @@
 package garg.bhawana;
-import java.util.Optional;
-import java.util.UUID;
 
 public class App {
+    public static final String JSON_FILE = "../../tasks.json";
+
     private final TaskService service;
 
     public App(TaskService service) throws Exception {
@@ -10,47 +10,45 @@ public class App {
     }
 
     public void run(String... args) throws Exception {
-        if (args.length == 0)
+        if (args.length == 0) {
+            System.out.println("Missing command");
             return;
+        }
         try {
             switch (args[0]) {
-            case "add":
-                System.out.println(service.add(new Task(args[1])));
-                break;
-            case "update":
-                service.update(UUID.fromString(args[1]), Optional.of(args[2]), Optional.empty());
-                break;
-            case "delete":
-                service.remove(UUID.fromString(args[1]));
-                break;
-            case "mark-in-progress":
-                service.update(UUID.fromString(args[1]), Optional.empty(), Optional.of(TaskStatus.IN_PROGRESS));
-                break;
-            case "mark-done":
-                service.update(UUID.fromString(args[1]), Optional.empty(), Optional.of(TaskStatus.DONE));
-                break;
-            case "list":
-                if (args.length > 1)
-                    service.list(TaskStatus.from(args[1])).forEach(System.out::println);
-                else
-                    service.list().forEach(System.out::println);
-                break;
-            default:
-                System.out.println("Unsupported input type!!!");
-                break;
+                case "add":
+                    System.out.println(service.add(args[1]));
+                    break;
+                case "update":
+                    service.update(args[1], args[2], null);
+                    break;
+                case "delete":
+                    service.delete(args[1]);
+                    break;
+                case "mark-in-progress":
+                    service.update(args[1], null, "in-progress");
+                    break;
+                case "mark-done":
+                    service.update(args[1], null, "done");
+                    break;
+                case "list":
+                    if (args.length > 1)
+                        service.list(args[1]).forEach(System.out::println);
+                    else
+                        service.list().forEach(System.out::println);
+                    break;
+                default:
+                    System.out.println("Unsupported command");
+                    break;
             }
-        } catch (EnumConstantNotPresentException e) {
-            System.out.println("Invalid task status! Allowed values are " + TaskStatus.displayValues());
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            service.save();
         }
     }
 
     public static void main(String[] args) throws Exception {
-        new App(
-            new TaskService("src/main/resources/tasks.json")
-        ).run(args);
+        final FileService fs = new FileService(JSON_FILE);
+        final TaskService ts = new TaskService(fs);
+        new App(ts).run(args);
     }
 }

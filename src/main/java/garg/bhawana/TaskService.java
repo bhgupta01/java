@@ -1,87 +1,76 @@
 package garg.bhawana;
+
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 
 public class TaskService {
-    private static final TypeReference<List<Task>> TaskListType = new TypeReference<>() {
-    };
+    private final FileService fileService;
 
-    private final Path path;
-    private final ObjectMapper mapper;
-    private final List<Task> content;
-    private final String filename;
-
-    public TaskService(String filename) throws Exception {
-        this.filename = filename;
-        this.path = getOrCreateFile();
-        this.mapper = new ObjectMapper();
-        this.content = new ArrayList<>();
-        deserialize();
+    public TaskService(FileService fileService) throws Exception {
+        this.fileService = fileService;
     }
 
-    public List<String> list() {
-        return content.stream().map(Task::toString).collect(Collectors.toList());
-    }
-
-    public List<String> list(TaskStatus status) {
-        return content.stream().filter(t -> t.getStatus().equals(status)).map(Task::toString)
+    public List<String> list() throws Exception {
+        final List<Task> content = new ArrayList<>();
+        fileService.read(content);
+        return content.stream()
+                .map(Task::toString)
                 .collect(Collectors.toList());
     }
 
-    public UUID add(Task task) {
-        Objects.requireNonNull(task);
+    public List<String> list(String status) throws Exception {
+        Objects.requireNonNull(status);
+
+        final TaskStatus taskStatus = TaskStatus.from(status);
+        final List<Task> content = new ArrayList<>();
+        fileService.read(content);
+        return content.stream()
+                .filter(t -> t.getStatus().equals(taskStatus))
+                .map(Task::toString)
+                .collect(Collectors.toList());
+    }
+
+    public UUID add(String description) throws Exception {
+        Objects.requireNonNull(description);
+
+        final Task task = new Task(description);
+        final List<Task> content = new ArrayList<>();
+        fileService.read(content);
         content.add(task);
+        fileService.write(content);
         return task.getId();
     }
 
-    public void remove(UUID id) {
+    public void delete(String id) throws Exception {
         Objects.requireNonNull(id);
-        content.removeIf(t -> t.getId().equals(id));
+
+        final UUID uuid = UUID.fromString(id);
+        final List<Task> content = new ArrayList<>();
+        fileService.read(content);
+        content.removeIf(t -> t.getId().equals(uuid));
+        fileService.write(content);
     }
 
-    public void update(UUID id, Optional<String> description, Optional<TaskStatus> status) {
+    public void update(String id, String description, String status) throws Exception {
         Objects.requireNonNull(id);
-        content.stream().filter(t -> t.getId().equals(id)).forEach(t -> {
-            if (description.isPresent())
-                t.setDescription(description.get());
-            if (status.isPresent())
-                t.setStatus(status.get());
-            t.setUpdatedAt(System.currentTimeMillis());
-        });
-    }
+        if (description == null && status == null)
+            return;
 
-    public void save() throws Exception {
-        try (final OutputStream out = Files.newOutputStream(path)) {
-            mapper.writeValue(out, content);
-        }
-    }
-
-    private Path getOrCreateFile() throws Exception {
-        final Path path = Path.of(filename);
-        if (!Files.exists(path))
-            Files.createFile(path);
-        return path;
-    }
-
-    private void deserialize() throws Exception {
-        try (final InputStream in = Files.newInputStream(path)) {
-            final List<Task> existing = mapper.readValue(in, TaskListType);
-            content.addAll(existing);
-        } catch(MismatchedInputException e) {
-            // silently handle this
-        }
+        final UUID uuid = UUID.fromString(id);
+        final List<Task> content = new ArrayList<>();
+        fileService.read(content);
+        content.stream()
+                .filter(t -> t.getId().equals(uuid))
+                .forEach(t -> {
+                    if (description != null)
+                        t.setDescription(description);
+                    if (status != null)
+                        t.setStatus(TaskStatus.from(status));
+                    t.setUpdatedAt(System.currentTimeMillis());
+                });
+        fileService.write(content);
     }
 }
