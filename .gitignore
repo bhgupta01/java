@@ -3,3 +3,4 @@
 .vscode/*
 target/
 src/main/java/resources/
+dependency-reduced-pom.xml
