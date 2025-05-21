@@ -4,7 +4,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,7 +31,7 @@ public class FileService {
     public void read(List<Task> content) throws Exception {
         try (final InputStream in = Files.newInputStream(path)) {
             content.addAll(mapper.readValue(in, TaskListType));
-        } catch(MismatchedInputException e) {
+        } catch (MismatchedInputException e) {
             // do nothing
         }
     }
@@ -40,8 +44,13 @@ public class FileService {
 
     private Path getOrCreateFile() throws Exception {
         final Path path = Path.of(filename);
-        if (!Files.exists(path))
-            Files.createFile(path);
+        Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rw-rw-rw-");
+        if (!Files.exists(path)) {
+            FileAttribute<Set<PosixFilePermission>> attribute = PosixFilePermissions.asFileAttribute(permissions);
+            Files.createFile(path, attribute);
+        } else {
+            Files.setPosixFilePermissions(path, permissions);
+        }
         return path;
     }
 }
